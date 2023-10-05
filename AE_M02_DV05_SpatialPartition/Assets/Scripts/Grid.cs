@@ -93,7 +93,12 @@ namespace SpatialPartitionPattern
             //unlink it from the list of its old cell
             if(soldier.previousSoldier != null)
             {
-                soldier.previousSoldier.nextSoldier = soldier.previousSoldier;
+                soldier.previousSoldier.nextSoldier = soldier.nextSoldier;
+            }
+
+            if(soldier.nextSoldier != null)
+            {
+                soldier.nextSoldier.previousSoldier = soldier.previousSoldier;
             }
 
             //if its the head of a list, remove it

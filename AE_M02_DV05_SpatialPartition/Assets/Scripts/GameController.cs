@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
+using JetBrains.Annotations;
 
 namespace SpatialPartitionPattern
 {
@@ -23,10 +25,13 @@ namespace SpatialPartitionPattern
         float mapWidth = 50f;
         int cellSize = 10;
 
-        int numberOfSoldiers = 100;
+        public bool useSpatialParition = false;
+
+        public int numberOfSoldiers = 100;
 
         Grid grid;
 
+        public TextMeshProUGUI stuff;
         void Start()
         {
             grid = new Grid((int)mapWidth, cellSize);
@@ -61,10 +66,10 @@ namespace SpatialPartitionPattern
         }
 
         void Update()
-        { 
-            //elapsed time is more at the bottom make a start time variable.
+        {
+            float startTime = Time.realtimeSinceStartup;
             //Move the enemies
-            for(int i = 0; i < enemySoldiers.Count; i++)
+            for (int i = 0; i < enemySoldiers.Count; i++)
             {
                 enemySoldiers[i].Move();
             }
@@ -78,10 +83,19 @@ namespace SpatialPartitionPattern
             //reset the list with closest enemies
             closestEnemies.Clear();
 
+            Soldier closestEnemy;
+
             //For each friendly, find the closest enemy and change its color and chase it.
             for (int i = 0; i < friendlySoldiers.Count; i++)
             {
-                Soldier closestEnemy = grid.FindClosestEnemy(friendlySoldiers[i]);
+                if (useSpatialParition)
+                {
+                    closestEnemy = grid.FindClosestEnemy(friendlySoldiers[i]);
+                }
+                else
+                {
+                    closestEnemy = FindClosestEnemySlow(friendlySoldiers[i]);
+                }
 
                 //if we found an enemy
                 if (closestEnemy != null)
@@ -95,6 +109,14 @@ namespace SpatialPartitionPattern
                     friendlySoldiers[i].Move(closestEnemy);
                 }
             }
+
+            float elapsedTime = (Time.realtimeSinceStartup - startTime) * 1000f;
+            stuff.text = (elapsedTime + "ms");
+        }
+
+        public void ToggleStuff()
+        {
+            useSpatialParition = !useSpatialParition;
         }
 
         //Find the closest enemy slow ver
